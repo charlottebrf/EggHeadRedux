@@ -1,3 +1,5 @@
+// Shows what createStore redux does under the hood
+
 const { createStore } = Redux;
 
 
@@ -17,16 +19,26 @@ const createStore = (reducer) => {
 
     const getState = () => state;
 
-    const dispatch = (action) => {};
+    // Call reducer with current action being disatched
+    const dispatch = (action) => {
+        state = reducer(state, action);
+        listeners.forEach(listener => listener());
+    };
 
     // everytime there's a change push a new listener into the array
+    //unsubscribe a listener- return a function from the subscribe method that removes the listener from the array
     const subscribe = (listener) => {
         listeners.push(listener);
+        return () => {
+            listeners = listeners.filter( l => l !== listener);
+        };
     };
 
     return { getState, dispatch, subscribe };
 
 };
+
+dispatch({});
 
 
 const store = createStore(counter);
